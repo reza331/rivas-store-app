@@ -1,3 +1,22 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
+@theme {
+    --color-A: #EFF2F3;
+    --color-B: #FBFCFC;
+    --color-text-A: black;
+    --color-card-border: #0000001a;
+    --color-btn: #6a7282;
+    --color-hover-effect: #00b8db;
+}
+
+.dark {
+    --color-A: #1D232A;
+    --color-B: #232a32;
+    --color-text-A: white;
+    --color-card-border: #ffffff24;
+    --color-btn: #161A20;
+    --color-hover-effect: #009689;
+
+}
 

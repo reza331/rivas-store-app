@@ -1,9 +1,11 @@
-import Image from "next/image";
+import ProductsSection from "@/features/home/components/products";
+import SearchBar from "@/features/home/components/search-bar";
 
 export default function Home() {
   return (
-    <div className="">
- 
+    <div className="bg-A pt-20 container mx-auto px-10">
+      <SearchBar />
+      <ProductsSection />
     </div>
   );
 }
