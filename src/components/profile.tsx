@@ -1,5 +1,5 @@
 import { AuthUser } from '@/types/auth.type'
-import React from 'react'
+import { redirect } from 'next/navigation'
 
 export default function Profile({ user }: { user: AuthUser }) {
     return (
@@ -15,7 +15,7 @@ export default function Profile({ user }: { user: AuthUser }) {
                 tabIndex={-1}
                 className="menu menu-sm bg-B text-text-A dropdown-content rounded-box z-1 w-52 p-2 shadow">
                 <li><a>Settings</a></li>
-                <li><a>Logout</a></li>
+                <li onClick={() => redirect('/login')}><a>Logout</a></li>
             </ul>
         </div>
     )

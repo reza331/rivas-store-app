@@ -1,13 +1,21 @@
 'use client'
-
-import Counter from "@/components/counter"
 import useProductQuery from "@/hooks/api/useProductQuery"
 import { useState } from "react"
 
 export default function ProductDetail({ sku }: { sku: string }) {
 
     const { data, isError, isLoading } = useProductQuery(sku)
-    const [count, setCount] = useState('1')
+    const [count, setCount] = useState(1)
+
+    const increase = () => {
+        if (data?.data.data.stock === count) return
+        setCount(prev => prev + 1)
+    }
+
+    const decrease = () => {
+        if (count === 1) return
+        setCount(prev => prev - 1)
+    }
 
     if (!data?.data) return null
 
@@ -36,8 +44,21 @@ export default function ProductDetail({ sku }: { sku: string }) {
                 </div>
                 {/* desc */}
                 <p className="w-[70%]">{data.data.data.description}</p>
+                {/* sotck */}
+                <div>Avaibale in stock : {data.data.data.stock}</div>
                 {/* counter */}
-                <Counter />
+                <div className="join join-horizontal">
+                    <button
+                        disabled={count === 1}
+                        onClick={decrease}
+                        className="btn btn-primary join-item btn-sm disabled:bg-gray-600 text-white">-</button>
+                    <div className="btn bg-B join-item text-text-A btn-sm">{count}</div>
+                    <button
+                        disabled={data.data.data.stock === count}
+                        onClick={increase}
+                        className="btn btn-primary join-item btn-sm">+</button>
+                </div>
+                {/*  */}
                 <button className="btn btn-primary w-fit rounded-2xl">Add To Cart</button>
             </div>
 

@@ -1,4 +1,3 @@
-
 'use client'
 import ProductDetail from "@/features/product/components/product-detail"
 import { useParams } from "next/navigation"

@@ -1,10 +1,29 @@
 
+import useToast from "@/hooks/use-toast"
+import { addToCart } from "@/services/cart.service"
 import { Product } from "@/types/products.type"
+import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 
 
 const ProductCard = (props: Product) => {
-    const { mainImage, name, price, sku } = props
+
+    const { id, mainImage, name, price, sku } = props
+    const { createToast } = useToast()
+    const queryClient = useQueryClient()
+
+    const handleAddToCart = async (e: any) => {
+        e.preventDefault()
+        e.stopPropagation()
+        const result = await addToCart(id, 1)
+        if (!result.res.ok) {
+            createToast({ message: 'something went wrong , try again', type: 'error' })
+            return
+        }
+        createToast({ message: 'Product added to cart successfully!', type: 'normal' })
+        queryClient.invalidateQueries({ queryKey: ['cart'] })
+    }
+
     return (
         <Link href={`/products/${sku}`}>
             <div className="relative size-full bg-B text-text-A rounded-[20px] shadow-sm shadow-black/5 overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]">
@@ -34,11 +53,7 @@ const ProductCard = (props: Product) => {
                 </div>
                 {/* cart button */}
                 <button
-                    onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        alert('clicked')
-                    }}
+                    onClick={(e) => handleAddToCart(e)}
                     className="w-full text-xs lg:text-[1rem] cursor-pointer flex justify-center bg-hover-effect text-white py-2.5">
                     Add To Cart
                 </button>

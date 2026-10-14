@@ -1,7 +1,9 @@
 'use client'
+import useToast from "@/hooks/use-toast"
 import { loginUser } from "@/services/auth.service"
 import { useAuthStoreActions } from "@/stores/auth-store"
 import { LoginInfo } from "@/types/auth.type"
+import { useQueryClient } from "@tanstack/react-query"
 import { redirect } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
@@ -11,6 +13,8 @@ export default function Page() {
     const [loading, setLoading] = useState(false)
     const { register, handleSubmit } = useForm<LoginInfo>()
     const { setUser } = useAuthStoreActions()
+    const { createToast } = useToast()
+    const queryClient = useQueryClient()
 
 
     const loginSubmit = async (data: LoginInfo) => {
@@ -21,12 +25,11 @@ export default function Page() {
         console.log(apiResponse);
         if (!apiResponse.ok) {
             setTimeout(() => { setLoading(false) }, 1000)
-            // createToast({ message: apiData.message, type: 'error' })
-            alert(apiData.message)
+            createToast({ message: apiData.message, type: 'error' })
             return
         }
-        // createToast({ message: apiData.message, type: 'normal' })
-        alert(apiData.message)
+        createToast({ message: apiData.message, type: 'normal' })
+        queryClient.invalidateQueries({queryKey:['cart']})
         setTimeout(() => { setLoading(false) }, 1000)
         setUser(apiData.user)
         redirect('/')

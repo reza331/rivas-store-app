@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from 'next-themes'
 import ReactQueryprovider from "@/components/react-queryprovider";
+import Toast from "@/components/toast";
 
 
 const geistSans = Geist({
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full bg-A text-text-A">
         <ReactQueryprovider>
           <ThemeProvider attribute="class">
+            <Toast />
             <Navbar />
             {children}
           </ThemeProvider>
