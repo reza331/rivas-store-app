@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from 'next-themes'
+import ReactQueryprovider from "@/components/react-queryprovider";
 
 
 const geistSans = Geist({
@@ -27,10 +28,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-A text-text-A">
-        <ThemeProvider attribute="class">
-          <Navbar />
-          {children}
-        </ThemeProvider>
+        <ReactQueryprovider>
+          <ThemeProvider attribute="class">
+            <Navbar />
+            {children}
+          </ThemeProvider>
+        </ReactQueryprovider>
       </body>
     </html >
   );

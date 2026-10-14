@@ -1,32 +1,30 @@
-import { useEffect, useState } from "react"
-import { mockedData } from "@/content/data"
+import { useEffect } from "react"
 import useDebounce from "@/hooks/use-debounce"
-import { useSearchActions, useSearchValue } from "@/stores/search-store"
+import { useData, useSearchActions, useSearchValue } from "@/stores/search-store"
 
 export default function useSearch() {
 
     const searchValue = useSearchValue()
+    const data = useData()
     const debouncedValue = useDebounce(searchValue)
     const { setIsSearching, setSearchValue, setSearchedList } = useSearchActions()
 
-    const [list, setList] = useState(mockedData.products)
-
     useEffect(() => {
+
         const query = debouncedValue.trim().toLowerCase()
 
         if (!query) {
             setIsSearching(false)
-            setList(mockedData.products)
             return
         }
 
-        const filteredList = mockedData.products.filter((product) =>
+        const filteredList = data.filter((product) =>
             product.name.toLowerCase().includes(query)
         )
 
         setSearchedList(filteredList)
         setIsSearching(true)
-        
+
     }, [debouncedValue, setIsSearching])
 
     return {

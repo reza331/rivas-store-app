@@ -1,0 +1,47 @@
+'use client'
+
+import Counter from "@/components/counter"
+import useProductQuery from "@/hooks/api/useProductQuery"
+import { useState } from "react"
+
+export default function ProductDetail({ sku }: { sku: string }) {
+
+    const { data, isError, isLoading } = useProductQuery(sku)
+    const [count, setCount] = useState('1')
+
+    if (!data?.data) return null
+
+    return (
+        <div className="flex w-full container mx-auto px-10 gap-7">
+            {/* image */}
+            <div className="w-1/2 h-[calc(100dvh-150px)] p-5 rounded-2xl shadow-sm bg-B">
+                <img className="size-full object-contain" src={data.data.data.mainImage} alt="" />
+            </div>
+
+            {/* details */}
+            <div className="w-1/2 h-fit flex flex-col gap-7">
+                {/* title */}
+                <h2 className="text-2xl font-semibold pt-2">{data.data.data.name}</h2>
+                {/* rating */}
+                <div className="rating">
+                    <input type="radio" name="rating-1" className="mask mask-star bg-orange-400" aria-label="1 star" />
+                    <input type="radio" name="rating-1" className="mask mask-star bg-orange-400" aria-label="2 star" />
+                    <input type="radio" name="rating-1" className="mask mask-star bg-orange-400" aria-label="3 star" />
+                    <input type="radio" name="rating-1" className="mask mask-star bg-orange-400" aria-label="4 star" defaultChecked />
+                    <input type="radio" name="rating-1" className="mask mask-star bg-orange-400" aria-label="5 star" />
+                </div>
+                {/* price */}
+                <div className="text-xl">
+                    $ {data.data.data.price}
+                </div>
+                {/* desc */}
+                <p className="w-[70%]">{data.data.data.description}</p>
+                {/* counter */}
+                <Counter />
+                <button className="btn btn-primary w-fit rounded-2xl">Add To Cart</button>
+            </div>
+
+
+        </div>
+    )
+}

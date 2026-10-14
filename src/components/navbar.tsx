@@ -1,6 +1,30 @@
+'use client'
+import { useAuthStoreActions, useAuthStoreUser } from "@/stores/auth-store";
+import Profile from "./profile";
 import ThemeControl from "./theme-control";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import useMeQuery from "@/hooks/api/useMeQuery";
+import { useEffect } from "react";
+
 
 export default function Navbar() {
+
+    const pathname = usePathname()
+    const user = useAuthStoreUser()
+    const { setUser } = useAuthStoreActions()
+    const { data, isLoading } = useMeQuery()
+
+    if (pathname === '/login') return null
+
+    useEffect(() => {
+        if (data?.data) {
+            setUser(data.data)
+        }
+    }, [data])
+
+    if (isLoading) return null
+
     return (
         <div className="w-dvw bg-[#1b1b1b] text-white fixed z-50 top-0 left-0 flex justify-center shadow-sm px-5 lg:px-10">
             <div className="container navbar">
@@ -32,30 +56,15 @@ export default function Navbar() {
                     </div> */}
                     </div>
                     {/* profile */}
-                    <div className="dropdown dropdown-end">
-                        <div tabIndex={0} role="button" className="btn ring-0 border-0 btn-circle avatar">
-                            <div className="w-10 rounded-full">
-                                <img
-                                    alt="Tailwind CSS Navbar component"
-                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-                            </div>
-                        </div>
-                        <ul
-                            tabIndex={-1}
-                            className="menu menu-sm bg-B dropdown-content rounded-box z-1 w-52 p-2 shadow">
-                            <li>
-                                <a className="justify-between">
-                                    Profile
-                                    <span className="badge">New</span>
-                                </a>
-                            </li>
-                            <li><a>Settings</a></li>
-                            <li><a>Logout</a></li>
-                        </ul>
-                    </div>
+                    {user ? (
+                        <Profile user={user} />
+                    ) : (
+                        <Link href={'/login'} className="btn btn-ghost">Login</Link>
+                    )}
                 </div>
             </div>
         </div>
 
     )
+
 }

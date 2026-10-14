@@ -1,21 +1,24 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 
-export default function useScrollpagination<T>(list: T[], itemsPerPage: number) {
+export default function useScrollpagination<T>(list: T[] | undefined, itemsPerPage: number) {
+
 
     const [finalList, setFinalList] = useState<T[]>([])
     const [currentPage, setCurrentPage] = useState(1)
-    const isLoading = useRef(false)
+    const [isLoading, setIsLoading] = useState(false)
     const isLocked = useRef(false)
 
 
+
     useEffect(() => {
+
+        if (!list) return
 
         const start = (currentPage - 1) * itemsPerPage
         const newPagedList = list.slice(start, start + itemsPerPage)
 
         console.log(currentPage);
-
 
         setFinalList((prev) => {
 
@@ -32,12 +35,23 @@ export default function useScrollpagination<T>(list: T[], itemsPerPage: number) 
 
         })
 
-        isLoading.current = false
+        setIsLoading(false)
+
     }, [currentPage, list, itemsPerPage])
 
 
     useEffect(() => {
+        if (!list) return
         const handleScroll = () => {
+
+            // Stop if there are no more products
+            if (currentPage * itemsPerPage >= list.length) {
+                setIsLoading(false)
+                return
+            }
+
+            setIsLoading(true)
+
             const scrollTop = window.scrollY
             const scrollHeight = document.documentElement.scrollHeight
             const clientHeight = window.innerHeight
@@ -48,17 +62,17 @@ export default function useScrollpagination<T>(list: T[], itemsPerPage: number) 
                 // Unlock after leaving the bottom
                 if (!isBottom) {
                     isLocked.current = false
+                    setIsLoading(false)
                     return
                 }
 
                 // Prevent loading multiple pages
                 if (isLocked.current) return
 
-                // Stop if there are no more products
-                if (currentPage * itemsPerPage >= list.length) return
-
                 isLocked.current = true
                 setCurrentPage((prev) => prev + 1)
+
+                setIsLoading(false)
 
             }, 1000)
 
@@ -69,7 +83,7 @@ export default function useScrollpagination<T>(list: T[], itemsPerPage: number) 
         return () => {
             window.removeEventListener('scroll', handleScroll)
         }
-    }, [currentPage, itemsPerPage, list.length])
+    }, [currentPage, itemsPerPage, list?.length])
 
-    return { finalList, currentPage, setCurrentPage }
+    return { isLoading, finalList, currentPage, setCurrentPage }
 }
