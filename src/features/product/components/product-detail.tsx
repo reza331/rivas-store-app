@@ -1,11 +1,16 @@
 'use client'
 import useProductQuery from "@/hooks/api/useProductQuery"
+import useToast from "@/hooks/use-toast"
+import { addToCart } from "@/services/cart.service"
+import { useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 
 export default function ProductDetail({ sku }: { sku: string }) {
 
-    const { data, isError, isLoading } = useProductQuery(sku)
+    const { data } = useProductQuery(sku)
     const [count, setCount] = useState(1)
+    const { createToast } = useToast()
+    const queryClient = useQueryClient()
 
     const increase = () => {
         if (data?.data.data.stock === count) return
@@ -15,6 +20,16 @@ export default function ProductDetail({ sku }: { sku: string }) {
     const decrease = () => {
         if (count === 1) return
         setCount(prev => prev - 1)
+    }
+
+    const handleAddToCart = async (id: number) => {
+        const result = await addToCart(id, count)
+        if (!result.res.ok) {
+            createToast({ message: 'something went wrong , try again', type: 'error' })
+            return
+        }
+        createToast({ message: 'Product added to cart successfully!', type: 'normal' })
+        queryClient.invalidateQueries({ queryKey: ['cart'] })
     }
 
     if (!data?.data) return null
@@ -59,7 +74,7 @@ export default function ProductDetail({ sku }: { sku: string }) {
                         className="btn btn-primary join-item btn-sm">+</button>
                 </div>
                 {/*  */}
-                <button className="btn btn-primary w-fit rounded-2xl">Add To Cart</button>
+                <button onClick={() => handleAddToCart(data.data.data.id)} className="btn btn-primary w-fit rounded-2xl">Add To Cart</button>
             </div>
 
 

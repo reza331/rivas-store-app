@@ -18,8 +18,9 @@ export default function useSearch() {
             return
         }
 
-        const filteredList = data.filter((product) =>
-            product.name.toLowerCase().includes(query)
+        const filteredList = data.filter((product) => {
+            return product.name.toLowerCase().includes(query) || product.categories.some(c => c.toLowerCase().includes(query))
+        }
         )
 
         setSearchedList(filteredList)

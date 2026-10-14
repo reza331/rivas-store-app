@@ -17,6 +17,18 @@ export const loginUser = async (loginInfo: LoginInfo) => {
 
 }
 
+export const logoutUser = async () => {
+
+    const res = await fetch(`${baseUrl}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+    })
+
+    const data = await res.json()
+
+    return { data, res }
+
+}
 
 export const getMe = async () => {
 

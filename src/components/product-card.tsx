@@ -1,13 +1,16 @@
 
 import useToast from "@/hooks/use-toast"
 import { addToCart } from "@/services/cart.service"
+import { useAuthStoreUser } from "@/stores/auth-store"
 import { Product } from "@/types/products.type"
 import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
+import { redirect } from "next/navigation"
 
 
 const ProductCard = (props: Product) => {
 
+    const user = useAuthStoreUser()
     const { id, mainImage, name, price, sku } = props
     const { createToast } = useToast()
     const queryClient = useQueryClient()
@@ -15,6 +18,9 @@ const ProductCard = (props: Product) => {
     const handleAddToCart = async (e: any) => {
         e.preventDefault()
         e.stopPropagation()
+        if (!user) {
+            redirect('/login')
+        }
         const result = await addToCart(id, 1)
         if (!result.res.ok) {
             createToast({ message: 'something went wrong , try again', type: 'error' })
