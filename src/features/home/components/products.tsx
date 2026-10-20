@@ -16,7 +16,7 @@ export default function ProductsSection() {
     const { data: wishlistData } = useWishlistQuery()
     const products = data?.data.data.items ?? []
     const { setTotal } = usePagetActions()
-    
+
     useEffect(() => {
         if (data?.data.data) {
             setTotal(data.data.data.total)
@@ -27,14 +27,13 @@ export default function ProductsSection() {
 
     if (isLoading) return (<div className="w-full flex items-center justify-center h-[calc(100dvh-200px)]">Loading content ... </div>)
 
-    if (!data?.data.data ) return null
-    if (!wishlistData?.data.data ) return null
+    if (!data?.data.data) return null
 
     return (
         <div className="container mx-auto lg:px-20 mt-5 pb-5">
             <div className="w-full grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
                 {products.map((product) => (
-                    <ProductCard key={product.id} wishlistdata={wishlistData.data} product={product} />
+                    <ProductCard key={product.id} wishlistdata={wishlistData?.data} product={product} />
                 ))}
             </div>
 

@@ -24,7 +24,7 @@ const ProductCard = ({ product, wishlistdata }: Prop) => {
     const [isWish, setIsWish] = useState(false)
 
     useEffect(() => {
-        if (wishlistdata) {
+        if (wishlistdata?.data) {
             setIsWish(wishlistdata.data.some(item => item.productId === product.id))
         }
     }, [wishlistdata])
