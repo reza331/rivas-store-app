@@ -25,13 +25,15 @@ export default function Page() {
         console.log(apiResponse);
         if (!apiResponse.ok) {
             setTimeout(() => { setLoading(false) }, 1000)
-            createToast({ message: apiData.message, type: 'error' })
+            createToast({ message: apiData.error.message, type: 'error' })
             return
         }
-        createToast({ message: apiData.message, type: 'normal' })
-        queryClient.invalidateQueries({queryKey:['cart']})
+        localStorage.setItem('accessToken', apiData.data.accessToken)
+        data
+        createToast({ message: 'Logged in successfully!', type: 'normal' })
+        queryClient.invalidateQueries({ queryKey: ['cart'] })
         setTimeout(() => { setLoading(false) }, 1000)
-        setUser(apiData.user)
+        setUser(apiData.data.user)
         redirect('/')
     }
 

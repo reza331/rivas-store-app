@@ -1,15 +1,18 @@
-import { Product } from "./products.type";
-
 export interface CartItem {
-    id: number;
-    product: Product;
+    productId: string;
     quantity: number;
 }
 
 export interface Cart {
-    id: number;
+    id: string;
+    tenantId: string;
+    userId: string;
     items: CartItem[];
-    createdAt: string;
+    couponCode: string | null;
+    version: number;
     updatedAt: string;
-    totalPrice: number;
+}
+
+export interface CartResponse {
+    data: Cart;
 }

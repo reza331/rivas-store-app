@@ -1,19 +1,33 @@
 
 import useToast from "@/hooks/use-toast"
 import { addToCart } from "@/services/cart.service"
+import { addToWishlist, deletefromWishlist, fetchProduct } from "@/services/products.service"
 import { useAuthStoreUser } from "@/stores/auth-store"
-import { Product } from "@/types/products.type"
+import { Product, WishlistResponse } from "@/types/products.type"
 import { useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { useEffect, useState } from "react"
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai"
 
+interface Prop {
+    product: Product
+    wishlistdata?: WishlistResponse
+}
 
-const ProductCard = (props: Product) => {
+const ProductCard = ({ product, wishlistdata }: Prop) => {
 
     const user = useAuthStoreUser()
-    const { id, mainImage, name, price, sku } = props
+    const { id, images, name, price } = product
     const { createToast } = useToast()
     const queryClient = useQueryClient()
+    const [isWish, setIsWish] = useState(false)
+
+    useEffect(() => {
+        if (wishlistdata) {
+            setIsWish(wishlistdata.data.some(item => item.productId === product.id))
+        }
+    }, [wishlistdata])
 
     const handleAddToCart = async (e: any) => {
         e.preventDefault()
@@ -21,6 +35,21 @@ const ProductCard = (props: Product) => {
         if (!user) {
             redirect('/login')
         }
+
+        const { data, res } = await fetchProduct(product.id)
+
+        if (!res.ok) {
+            createToast({ message: 'something went wrong , try again', type: 'error' })
+            return
+        }
+
+        const stock = data.data.available
+
+        if (stock === 0) {
+            createToast({ message: 'Item is not available', type: 'error' })
+            return
+        }
+
         const result = await addToCart(id, 1)
         if (!result.res.ok) {
             createToast({ message: 'something went wrong , try again', type: 'error' })
@@ -30,13 +59,41 @@ const ProductCard = (props: Product) => {
         queryClient.invalidateQueries({ queryKey: ['cart'] })
     }
 
+    const toggleWishlist = async (e: any) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (!user) {
+            redirect('/login')
+        }
+        if (isWish) {
+            const { res } = await deletefromWishlist(product.id)
+            if (!res.ok) {
+                alert('failed')
+                return
+            }
+            queryClient.invalidateQueries({ queryKey: ['wishlist'] })
+        } else {
+            const { res } = await addToWishlist(product.id)
+            if (!res.ok) {
+                alert('failed')
+                return
+            }
+            queryClient.invalidateQueries({ queryKey: ['wishlist'] })
+        }
+    }
+
     return (
-        <Link href={`/products/${sku}`}>
+        <Link href={`/products/${id}`}>
             <div className="relative size-full bg-B text-text-A rounded-[20px] shadow-sm shadow-black/5 overflow-hidden cursor-pointer transition-transform hover:scale-[1.02]">
+                {wishlistdata && <div className="absolute top-5 right-5">
+                    <button onClick={toggleWishlist} className="btn btn-sm bg-rose-700 text-white">
+                        {isWish ? <AiFillHeart /> : <AiOutlineHeart />}
+                    </button>
+                </div>}
                 {/* info + image */}
                 <div className="p-1">
                     <div className="w-full h-25 lg:h-45 p-2 bg-A rounded-2xl">
-                        <img className="size-full object-contain" src={mainImage} alt="" />
+                        <img className="size-full object-contain" src={images[0]} alt="" />
                     </div>
                     <div className="w-full p-2">
                         {/* title */}

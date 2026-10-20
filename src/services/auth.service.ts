@@ -13,6 +13,8 @@ export const loginUser = async (loginInfo: LoginInfo) => {
 
     const data = await res.json()
 
+    console.log(data);
+
     return { data, res }
 
 }
@@ -32,8 +34,13 @@ export const logoutUser = async () => {
 
 export const getMe = async () => {
 
-    const res = await fetch(`${baseUrl}/auth/getme`, {
+    const token = localStorage.getItem('accessToken')
+
+    const res = await fetch(`${baseUrl}/auth/me`, {
         credentials: 'include',
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
     })
 
     const data = await res.json()

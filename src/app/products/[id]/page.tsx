@@ -5,11 +5,11 @@ import { useParams } from "next/navigation"
 
 export default function ProductPage() {
 
-    const params = useParams<{ sku: string }>()
+    const params = useParams<{ id: string }>()
 
     return (
         <div className="pt-20">
-            <ProductDetail sku={params.sku} />
+            <ProductDetail id={params.id} />
         </div>
     )
 }

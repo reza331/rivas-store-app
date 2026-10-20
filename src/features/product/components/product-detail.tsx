@@ -3,17 +3,17 @@ import useProductQuery from "@/hooks/api/useProductQuery"
 import useToast from "@/hooks/use-toast"
 import { addToCart } from "@/services/cart.service"
 import { useQueryClient } from "@tanstack/react-query"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
-export default function ProductDetail({ sku }: { sku: string }) {
+export default function ProductDetail({ id }: { id: string }) {
 
-    const { data } = useProductQuery(sku)
+    const { data } = useProductQuery(id)
     const [count, setCount] = useState(1)
     const { createToast } = useToast()
     const queryClient = useQueryClient()
 
     const increase = () => {
-        if (data?.data.data.stock === count) return
+        if (data?.data.data.available === count) return
         setCount(prev => prev + 1)
     }
 
@@ -22,7 +22,7 @@ export default function ProductDetail({ sku }: { sku: string }) {
         setCount(prev => prev - 1)
     }
 
-    const handleAddToCart = async (id: number) => {
+    const handleAddToCart = async (id: string) => {
         const result = await addToCart(id, count)
         if (!result.res.ok) {
             createToast({ message: 'something went wrong , try again', type: 'error' })
@@ -38,13 +38,13 @@ export default function ProductDetail({ sku }: { sku: string }) {
         <div className="flex w-full container mx-auto px-10 gap-7">
             {/* image */}
             <div className="w-1/2 h-[calc(100dvh-150px)] p-5 rounded-2xl shadow-sm bg-B">
-                <img className="size-full object-contain" src={data.data.data.mainImage} alt="" />
+                <img className="size-full object-contain" src={data.data.data.images[0]} alt="" />
             </div>
 
             {/* details */}
             <div className="w-1/2 h-fit flex flex-col gap-7">
                 {/* title */}
-                <h2 className="text-2xl font-semibold pt-2">{data.data.data.name}</h2>
+                <h2 className="text-2xl font-semibold pt-2 whitespace-nowrap line-clamp-1">{data.data.data.name}</h2>
                 {/* rating */}
                 <div className="rating">
                     <input type="radio" name="rating-1" className="mask mask-star bg-orange-400" aria-label="1 star" />
@@ -60,7 +60,7 @@ export default function ProductDetail({ sku }: { sku: string }) {
                 {/* desc */}
                 <p className="w-[70%]">{data.data.data.description}</p>
                 {/* sotck */}
-                <div>Avaibale in stock : {data.data.data.stock}</div>
+                <div>Avaibale in stock : {data.data.data.available}</div>
                 {/* counter */}
                 <div className="join join-horizontal">
                     <button
@@ -69,12 +69,12 @@ export default function ProductDetail({ sku }: { sku: string }) {
                         className="btn btn-primary join-item btn-sm disabled:bg-gray-600 text-white">-</button>
                     <div className="btn bg-B join-item text-text-A btn-sm">{count}</div>
                     <button
-                        disabled={data.data.data.stock === count}
+                        disabled={data.data.data.available === count}
                         onClick={increase}
                         className="btn btn-primary join-item btn-sm">+</button>
                 </div>
                 {/*  */}
-                <button onClick={() => handleAddToCart(data.data.data.id)} className="btn btn-primary w-fit rounded-2xl">Add To Cart</button>
+                <button disabled={data.data.data.available === 0} onClick={() => handleAddToCart(data.data.data.id)} className="btn btn-primary w-fit rounded-2xl">Add To Cart</button>
             </div>
 
 

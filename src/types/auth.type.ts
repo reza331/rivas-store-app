@@ -1,9 +1,13 @@
 export type AuthUser = {
-    sub: number
-    username: string
-    email: string
-    avatar: string | null
-    role: string
+    id: string;
+    name: string;
+    email: string;
+    role: string;
+    tenantIds: string[];
+    grants: string[];
+    denies: string[];
+    scope: Record<string, unknown>;
+    permissions: string[];
 }
 
 export type LoginInfo = {
